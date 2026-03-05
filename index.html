@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Internship Registration</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        form { width: 500px; margin: auto; }
+        input, select { width: 100%; padding: 8px; margin: 5px 0; }
+        .error { color: red; font-size: 12px; }
+        .success { color: green; }
+        button { padding: 10px 20px; background: blue; color: white; border: none; }
+    </style>
+</head>
+<body>
+    <h2>Secure Online Internship Registration</h2>
+    <form id="registrationForm" action="register.php" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
+        
+        <label>Student ID (FA21-BCS-001):</label>
+        <input type="text" name="student_id" id="student_id" required>
+        <div id="student_id_error" class="error"></div>
+
+        <label>Full Name:</label>
+        <input type="text" name="full_name" id="full_name" required>
+
+        <label>Email:</label>
+        <input type="email" name="email" id="email" onblur="checkEmail()" required>
+        <div id="email_status" class="error"></div>
+
+        <label>Password (Min 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special):</label>
+        <input type="password" name="password" id="password" required>
+        <div id="password_error" class="error"></div>
+
+        <label>Confirm Password:</label>
+        <input type="password" name="confirm_password" id="confirm_password" required>
+        <div id="confirm_error" class="error"></div>
+
+        <label>CNIC (12345-1234567-1):</label>
+        <input type="text" name="cnic" id="cnic" required>
+        <div id="cnic_error" class="error"></div>
+
+        <label>Phone (03XXXXXXXXXX):</label>
+        <input type="text" name="phone" id="phone" required>
+        <div id="phone_error" class="error"></div>
+
+        <label>CGPA (0.00 - 4.00):</label>
+        <input type="number" step="0.01" name="cgpa" id="cgpa" required>
+        <div id="cgpa_error" class="error"></div>
+
+        <label>Department:</label>
+        <select name="department" id="department" required>
+            <option value="">Select</option>
+            <option value="CS">Computer Science</option>
+            <option value="SE">Software Engineering</option>
+            <option value="IT">Information Technology</option>
+        </select>
+
+        <label>Resume (PDF only, Max 2MB):</label>
+        <input type="file" name="resume" id="resume" accept=".pdf" required>
+        <div id="resume_error" class="error"></div>
+
+        <button type="submit">Register</button>
+    </form>
+
+    <script>
+        // Student ID Validation
+        function validateStudentID(id) {
+            let pattern = /^FA\d{2}-BCS-\d{3}$/;
+            return pattern.test(id);
+        }
+
+        // Email Validation
+        function validateEmail(email) {
+            let pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return pattern.test(email);
+        }
+
+        // Password Validation
+        function validatePassword(password) {
+            let pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+            return pattern.test(password);
+        }
+
+        // CNIC Validation
+        function validateCNIC(cnic) {
+            let pattern = /^\d{5}-\d{7}-\d{1}$/;
+            return pattern.test(cnic);
+        }
+
+        // Phone Validation
+        function validatePhone(phone) {
+            let pattern = /^03\d{9}$/;
+            return pattern.test(phone);
+        }
+
+        // Main Validation Function
+        function validateForm() {
+            let isValid = true;
+
+            // Student ID
+            let student_id = document.getElementById("student_id").value;
+            if (!validateStudentID(student_id)) {
+                document.getElementById("student_id_error").innerHTML = "Student ID must be like FA21-BCS-001";
+                isValid = false;
+            } else {
+                document.getElementById("student_id_error").innerHTML = "";
+            }
+
+            // Password
+            let password = document.getElementById("password").value;
+            if (!validatePassword(password)) {
+                document.getElementById("password_error").innerHTML = "Password must have 8+ chars, 1 uppercase, 1 lowercase, 1 number, 1 special";
+                isValid = false;
+            } else {
+                document.getElementById("password_error").innerHTML = "";
+            }
+
+            // Confirm Password
+            let confirm = document.getElementById("confirm_password").value;
+            if (password !== confirm) {
+                document.getElementById("confirm_error").innerHTML = "Passwords do not match";
+                isValid = false;
+            } else {
+                document.getElementById("confirm_error").innerHTML = "";
+            }
+
+            // CNIC
+            let cnic = document.getElementById("cnic").value;
+            if (!validateCNIC(cnic)) {
+                document.getElementById("cnic_error").innerHTML = "CNIC format: 12345-1234567-1";
+                isValid = false;
+            } else {
+                document.getElementById("cnic_error").innerHTML = "";
+            }
+
+            // Phone
+            let phone = document.getElementById("phone").value;
+            if (!validatePhone(phone)) {
+                document.getElementById("phone_error").innerHTML = "Phone format: 03XXXXXXXXXX";
+                isValid = false;
+            } else {
+                document.getElementById("phone_error").innerHTML = "";
+            }
+
+            // CGPA
+            let cgpa = document.getElementById("cgpa").value;
+            if (cgpa < 0.0 || cgpa > 4.0) {
+                document.getElementById("cgpa_error").innerHTML = "CGPA must be between 0.00 and 4.00";
+                isValid = false;
+            } else {
+                document.getElementById("cgpa_error").innerHTML = "";
+            }
+
+            // Resume
+            let resume = document.getElementById("resume").files[0];
+            if (resume) {
+                if (resume.type !== "application/pdf") {
+                    document.getElementById("resume_error").innerHTML = "Only PDF files allowed";
+                    isValid = false;
+                } else if (resume.size > 2 * 1024 * 1024) {
+                    document.getElementById("resume_error").innerHTML = "File size must be less than 2MB";
+                    isValid = false;
+                } else {
+                    document.getElementById("resume_error").innerHTML = "";
+                }
+            }
+
+            return isValid;
+        }
+
+        // AJAX Email Check
+        function checkEmail() {
+            let email = document.getElementById("email").value;
+            if (!validateEmail(email)) {
+                document.getElementById("email_status").innerHTML = "Invalid email format";
+                return;
+            }
+
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "check_email.php", true);
+            xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    if (xhr.responseText == "taken") {
+                        document.getElementById("email_status").innerHTML = "Email already exists";
+                        document.getElementById("email_status").style.color = "red";
+                    } else {
+                        document.getElementById("email_status").innerHTML = "Email available";
+                        document.getElementById("email_status").style.color = "green";
+                    }
+                }
+            };
+            xhr.send("email=" + email);
+        }
+    </script>
+</body>
+</html>
